@@ -1,12 +1,13 @@
 import gsap from "../vendor/gsap.js";
 import { typeWriter } from "../components/typeWriter.js";
+import createBackgroundFX from "../components/backgroundFX.js";
 
 /* =========================================================
    第二幕 · 档案室
    ---------------------------------------------------------
    loadArchiveScene(mount) → { el, done, destroy, next }
 
-   流程：档案室出现 → 古书出现 → 标题出现 → 资料解锁
+   流程：档案室出现 → 档案页浮出 → 标题出现 → 资料解锁
          → 物件可点击 → 进入下一幕
 
    注意：图片路径是相对 index.html 的，所以写 src/assets/...
@@ -21,9 +22,9 @@ export function loadArchiveScene(mount) {
 
     <div class="archive-bg"></div>
 
-    <div class="archive-book">
-      <img src="src/assets/archive-book.webp" alt="档案古书">
-    </div>
+    <!-- 古书不再用图片：整屏这块「档案页」是 CSS 画的（archive.css 的 ::before）。
+         它同时是「点任意处 → 进入下一幕」的点击区，交互没变。 -->
+    <div class="archive-book"></div>
 
 
     <div class="profile">
@@ -79,6 +80,10 @@ export function loadArchiveScene(mount) {
 
   `;
 
+  /* 统一氛围层（红雾 + 金雾 + 微光 + 粒子，全 CSS，pointer-events:none）。
+     插在 .archive-bg 之后、书之前 —— 盖在背景渐变上，又在内容之下。 */
+  scene.insertBefore(createBackgroundFX(30), scene.querySelector(".archive-book"));
+
   mount.appendChild(scene);
 
   let resolveDone = null;
@@ -113,7 +118,7 @@ function animateArchive(scene) {
   const qa = (s) => Array.from(scene.querySelectorAll(s));
 
   const bg      = q(".archive-bg");
-  const book    = q(".archive-book img");
+  const book    = q(".archive-book");
   const h1      = q(".profile h1");
   const h3      = q(".profile h3");
   const info    = qa(".profile .info p");

@@ -17,32 +17,22 @@
 
   isolation:isolate;          /* 把下面的混合模式关在本场景里 */
 
-  /* 书铺满整屏的放大倍数：改这个数就能调书的远近 */
-  --book-zoom:1.55;
-
 }
 
 
 .archive-scene .archive-bg{
-
-
   position:absolute;
-
   inset:0;
 
-
-  background-image:
-  url("../assets/archive-room.webp");
-
-
-  background-size:cover;
-
-  background-position:center;
-
-
+  /* 书房背景不再用图片：几层径向渐变叠出"暗红穹顶 + 两侧烛光"的空间感 */
+  background:
+    radial-gradient(90% 70% at 50% 42%, rgba(78,14,20,.55), rgba(0,0,0,0) 72%),
+    radial-gradient(60% 50% at 16% 78%, rgba(52,8,14,.50), rgba(0,0,0,0) 74%),
+    radial-gradient(70% 60% at 86% 24%, rgba(96,22,28,.32), rgba(0,0,0,0) 76%),
+    linear-gradient(180deg, #140809 0%, #0a0405 60%, #050202 100%);
 }
 
-/* 让房间整体再压暗一点，给物件让出层次 */
+/* 让整体再压暗一点，给物件让出层次 */
 .archive-scene .archive-bg::after{
 
   content:"";
@@ -59,9 +49,37 @@
 }
 
 
-/* ---------------- 古书：铺满整屏 ---------------- */
-/* 原来是 left:50% / bottom:5% / translateX(-50%) / width:50%，
-   现在改成 inset:0 铺满，再用 --book-zoom 放大到书页充满画面 */
+/* ---------------- 档案页：铺满整屏，纯 CSS ----------------
+   原来这里是一张古书图（铺满全屏）。现在整块用 CSS 画：
+   中间一道书脊、两侧纸面反光、底下压暗。它同时是「整屏可点 → 进入下一幕」
+   的点击区，所以交互和层级都没变，只是把图片换成了渐变。 */
+.archive-scene .archive-book::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+
+  background:
+    /* 书脊 */
+    linear-gradient(90deg,
+      rgba(0,0,0,0) 0%, rgba(0,0,0,0) 49.2%,
+      rgba(196,158,104,.13) 50%, rgba(0,0,0,0) 50.8%, rgba(0,0,0,0) 100%),
+    /* 左右两页的柔和反光 */
+    radial-gradient(68% 58% at 21% 44%, rgba(154,120,76,.17), rgba(0,0,0,0) 70%),
+    radial-gradient(68% 58% at 79% 44%, rgba(154,120,76,.13), rgba(0,0,0,0) 70%),
+    /* 纸面本身 */
+    linear-gradient(180deg, rgba(34,23,14,.58) 0%, rgba(16,11,7,.78) 100%);
+
+  transition:filter .5s;
+}
+
+.archive-scene .archive-book:hover::before{
+  filter:brightness(1.2) saturate(1.06);
+}
+
+/* ---------------- 点击层：铺满整屏（图片已移除） ---------------- */
+/* 整屏一块：既是视觉上的「档案页」，也是「点任意处 → 进入下一幕」的点击区。
+   上面的 ::before 画页面，这里的 ::after 压暗四边。 */
 .archive-scene .archive-book{
 
   position:absolute;
@@ -81,33 +99,6 @@
 }
 
 
-
-.archive-scene .archive-book img{
-
-  width:100%;
-
-  height:100%;
-
-  display:block;
-
-  object-fit:cover;
-
-  object-position:50% 30%;    /* 对准书页所在的那条横带 */
-
-  /* 不透明 PNG、背景接近纯黑，用 lighten 让黑底融进暗房间 */
-  mix-blend-mode:lighten;
-
-  transform:scale(var(--book-zoom));
-
-  transition:filter .5s;
-
-}
-
-.archive-scene .archive-book:hover img{
-
-  filter:brightness(1.1) saturate(1.05);
-
-}
 
 /* 只压书页四边的暗角：书铺满整屏后整幅会太亮，氛围会丢。
    层级：书(z1) → 这个暗角 → 资料/物件(z2/z3)，所以物件不会被压暗 */
@@ -362,10 +353,6 @@
 /* ---------------- 小屏适配（手机竖屏） ---------------- */
 @media (max-width:1100px){
 
-  /* 竖屏下书按宽度铺满，上下留出房间的暗部 */
-  .archive-scene{ --book-zoom:1.02; }
-
-  .archive-book img{ object-position:50% 45%; }
 
 
   .profile{

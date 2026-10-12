@@ -15,13 +15,11 @@ const transitionReady = import("../components/transition.js?b=" + _BUILD);
 
 export const OPENING_CONFIG = {
 
-  /* --- 开场 --- */
-  bgIn:        2.4,    // 环境底淡入
-  mansionIn:   3.0,    // 庄园淡入
-  mansionFrom: 0.30,   // 庄园起始亮度
-  mansionTo:   0.95,   // 庄园最终亮度
+  /* --- 开场（全部纯 CSS 氛围，不再有任何图片） --- */
+  bgIn:        2.4,    // 后层雾淡入
+  mansionIn:   3.0,    // 前层雾淡入
   fogBackOp:   0.40,   // 后层雾最终透明度
-  fogFrontOp:  0.75,   // 前层雾最终透明度
+  fogFrontOp:  0.75,   // 前层雾最终透明度（下面几行是文字出现的时间点）
   h1At:        1.9,    // "欢迎回家" 出现时间点
   h2At:        2.7,    // "亲爱的"     出现时间点
   btnAt:       3.3,    // 按钮          出现时间点
@@ -42,27 +40,23 @@ export const OPENING_CONFIG = {
 
 };
 
-const ASSETS = [
-  "src/assets/scene.webp",
-  "src/assets/mansion.webp",
-  "src/assets/fog.webp"
-];
-
+/* 这一幕**不需要任何图片** —— 没有素材要预加载，所以第一幕是开机即播，
+   不用再等图片下载完（原来那三张要等 5.6MB）。 */
 const CONFIG = OPENING_CONFIG;
 
 export function loadOpeningScene(mount) {
   const el = document.createElement("div");
   el.className = "scene";
   el.innerHTML = `
+    <!-- 第一幕不再依赖任何图片：黑色底 + 纯 CSS 红黑雾气 + 少量漂浮粒子。
+         每层雾是「外层 + 内层 i」两层：外层留给 GSAP 做推进/扑面，
+         内层自己跑 CSS 漂移动画 —— 分开写在两层上，动画才不会互相覆盖。 -->
     <div class="camera">
-      <img class="bg" src="src/assets/scene.webp" alt="">
-      <img class="mansion" src="src/assets/mansion.webp" alt="庄园">
+      <div class="dark"></div>
+      <div class="mist mist-back"><i></i></div>
+      <div class="mist mist-front"><i></i></div>
+      <div class="dust"></div>
     </div>
-
-    <div class="dark"></div>
-
-    <div class="fog-layer fog-back"><img class="fog-img" src="src/assets/fog.webp" alt=""></div>
-    <div class="fog-layer fog-front"><img class="fog-img" src="src/assets/fog.webp" alt=""></div>
 
     <div class="vignette"></div>
     <div class="grain"></div>
@@ -77,11 +71,9 @@ export function loadOpeningScene(mount) {
   mount.appendChild(el);
 
   const q = (s) => el.querySelector(s);
-  const camera   = q(".camera");
-  const bg       = q(".bg");
-  const mansion  = q(".mansion");
-  const fogBack  = q(".fog-back");
-  const fogFront = q(".fog-front");
+  const camera    = q(".camera");
+  const mistBack  = q(".mist-back");
+  const mistFront = q(".mist-front");
   const content  = q(".content");
   const hint     = q(".hint");
   const enterBtn = q(".enter-btn");
@@ -96,18 +88,23 @@ export function loadOpeningScene(mount) {
   const done = new Promise((r) => { resolveDone = r; });
 
 
-  /* ---------- 素材预加载（缺图也不会黑屏卡死） ---------- */
-  function preload(src) {
-    return new Promise((resolve) => {
-      const img = new Image();
-      let settled = false;
-      const finish = (ok) => { if (!settled) { settled = true; resolve(ok); } };
-      img.onload  = () => finish(true);
-      img.onerror = () => { console.warn("[回家种苞米] 找不到素材：" + src); finish(false); };
-      img.src = src;
-      setTimeout(() => finish(false), 4000);
-    });
+  /* ---------- 漂浮粒子（纯 CSS：每个只是一颗 span，位置/速度随机） ---------- */
+  function makeDust(host, n) {
+    if (!host) return;
+    for (let i = 0; i < n; i++) {
+      const s = document.createElement("span");
+      s.style.left = (Math.random() * 100).toFixed(2) + "%";
+      s.style.bottom = (-8 - Math.random() * 26).toFixed(1) + "%";
+      const d = (2 + Math.random() * 2.4).toFixed(1);
+      s.style.width = d + "px";
+      s.style.height = d + "px";
+      s.style.animationDuration = (14 + Math.random() * 16).toFixed(1) + "s";
+      s.style.animationDelay = (-Math.random() * 24).toFixed(1) + "s";
+      s.style.setProperty("--peak", (0.16 + Math.random() * 0.4).toFixed(2));
+      host.appendChild(s);
+    }
   }
+  makeDust(q(".dust"), 26);
 
 
   /* ---------- 开场 ---------- */
@@ -121,15 +118,15 @@ export function loadOpeningScene(mount) {
     });
 
     introTl
-      .to(bg, { opacity: 1, duration: CONFIG.bgIn }, 0)
+      /* 后层雾从暗处慢慢浮出来 */
+      .fromTo(mistBack,
+        { opacity: 0, scale: 1.08 },
+        { opacity: CONFIG.fogBackOp, scale: 1, duration: CONFIG.bgIn }, 0)
 
-      .fromTo(mansion,
-        { opacity: 0, filter: "brightness(" + CONFIG.mansionFrom + ") contrast(1) blur(5px)" },
-        { opacity: 1, filter: "brightness(" + CONFIG.mansionTo + ") contrast(1.08) blur(0px)",
-          duration: CONFIG.mansionIn }, 0.6)
-
-      .to(fogBack,  { opacity: CONFIG.fogBackOp,  duration: 2.6 }, 1.0)
-      .to(fogFront, { opacity: CONFIG.fogFrontOp, duration: 2.4 }, 1.4)
+      /* 前层雾稍后跟上，作为主体氛围 */
+      .fromTo(mistFront,
+        { opacity: 0, scale: .94 },
+        { opacity: CONFIG.fogFrontOp, scale: 1, duration: CONFIG.mansionIn }, 0.6)
 
       .fromTo(q("h1"),
         { opacity: 0, y: 26, letterSpacing: "0.62em", textIndent: "0.62em" },
@@ -167,8 +164,8 @@ export function loadOpeningScene(mount) {
       .to(camera, { scale: CONFIG.zoom, y: CONFIG.pushY, duration: CONFIG.pushTime }, CONFIG.pushDelay)
 
       /* 红雾扑面（比镜头更快） */
-      .to(fogBack,  { scale: 2.1, opacity: 0.55, duration: CONFIG.fogBackTime, ease: "power2.in" }, CONFIG.pushDelay)
-      .to(fogFront, { scale: CONFIG.fogRush, opacity: 1, duration: CONFIG.fogRushTime, ease: "power2.in" }, CONFIG.fogRushAt);
+      .to(mistBack,  { scale: 2.1, opacity: 0.55, duration: CONFIG.fogBackTime, ease: "power2.in" }, CONFIG.pushDelay)
+      .to(mistFront, { scale: CONFIG.fogRush, opacity: 1, duration: CONFIG.fogRushTime, ease: "power2.in" }, CONFIG.fogRushAt);
 
     entered = true;
 
@@ -192,21 +189,17 @@ export function loadOpeningScene(mount) {
   }
 
 
-  /* ---------- 起跑 ---------- */
-  const onLoad = () => {
-    Promise.all(ASSETS.map(preload)).then(() => { if (!destroyed) playIntro(); });
-  };
-  if (document.readyState === "complete") onLoad();
-  else window.addEventListener("load", onLoad, { once: true });
+  /* ---------- 起跑 ----------
+     没有图片要等，直接播 —— 第一幕现在是真正的「开机即现」 */
+  playIntro();
 
 
   /* ---------- 卸载 ---------- */
   function destroy() {
     destroyed = true;
-    window.removeEventListener("load", onLoad);
     document.removeEventListener("keydown", onKey);
     if (introTl) introTl.kill();
-    gsap.killTweensOf([bg, mansion, camera, fogBack, fogFront, content, hint, enterBtn]);
+    gsap.killTweensOf([mistBack, mistFront, camera, content, hint, enterBtn]);
     el.remove();
   }
 

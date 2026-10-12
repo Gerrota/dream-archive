@@ -32,11 +32,9 @@
 
   inset:-15%;
 
-  background-image:url("../assets/fog.webp");
+  /* 虚空的红雾不再用图片：径向渐变叠出来的雾团，效果一样但零请求 */
 
-  background-size:cover;
-
-  background-position:center;
+  background-repeat:no-repeat;
 
   mix-blend-mode:screen;
 
@@ -44,9 +42,35 @@
 
 }
 
-.void-fog-back{ opacity:.16; filter:blur(10px) brightness(.9); animation:fog-drift-a 36s ease-in-out infinite alternate; }
+.void-fog-back{
 
-.void-fog-front{ opacity:.28; filter:brightness(1.25); animation:fog-drift-b 26s ease-in-out infinite alternate; }
+  opacity:.24;
+
+  filter:blur(10px) brightness(.95);
+
+  background:
+    radial-gradient(50% 40% at 26% 64%, rgba(120,14,22,.55), rgba(0,0,0,0) 72%),
+    radial-gradient(44% 36% at 74% 34%, rgba(88,10,20,.45), rgba(0,0,0,0) 72%),
+    radial-gradient(40% 34% at 52% 84%, rgba(70,8,16,.40), rgba(0,0,0,0) 74%);
+
+  animation:fog-drift-a 36s ease-in-out infinite alternate;
+
+}
+
+.void-fog-front{
+
+  opacity:.32;
+
+  filter:brightness(1.3);
+
+  background:
+    radial-gradient(40% 30% at 50% 46%, rgba(150,22,34,.40), rgba(0,0,0,0) 74%),
+    radial-gradient(34% 26% at 18% 28%, rgba(126,18,30,.30), rgba(0,0,0,0) 72%),
+    radial-gradient(32% 24% at 84% 70%, rgba(116,16,28,.28), rgba(0,0,0,0) 72%);
+
+  animation:fog-drift-b 26s ease-in-out infinite alternate;
+
+}
 
 @keyframes fog-drift-a{
 

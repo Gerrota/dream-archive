@@ -723,3 +723,51 @@ CSS 里写的是 `#enter{…}`，但 `opening.js` 里按钮是 `class="enter-btn
 - 点击「与我入梦」/ 画面任意处 / `Enter`：**一次点击就够**，约 1.9 秒转场（镜头推进 → 红雾扑面 → 黑幕）
 - 收尾停在纯黑，然后交棒给第二幕
 - 节奏参数在 `opening.js` 顶部的 `OPENING_CONFIG`
+
+---
+
+## 十二、纯 CSS 氛围改造（图片 → CSS）
+
+目标：**减少图片依赖，从「图片驱动」改成「CSS 氛围驱动」**。
+交互逻辑一行没动，只换掉了视觉资源。
+
+### 删掉的图片（5 张，合计 1.36 MB）
+
+| 文件 | 原本用在哪 | 现在换成 |
+|---|---|---|
+| `scene.webp` | 第一幕·环境底 | `.scene` 自身的 `radial-gradient` 黑红渐变 |
+| `mansion.webp` | 第一幕·庄园 | 两层 `.mist`（纯 CSS 雾团）+ 26 颗 `.dust` 粒子 |
+| `fog.webp` | 第一幕红雾 + 第三幕虚空雾 | 两个场景各自的 `radial-gradient` 雾 |
+| `archive-room.webp` | 第二幕·书房背景 | `.archive-bg` 的四层径向渐变 |
+| `archive-book.webp` | 第二幕·古书（铺满整屏） | `.archive-book::before` 画的「档案页」 |
+
+**现在整站只有 `iris.webp`（102 KB）会被下载。**
+第一幕 `document.images.length === 0`（一张图都没有）。
+
+### 新增 / 改成的 CSS 动效
+
+| 名字 | 在哪 | 做什么 |
+|---|---|---|
+| `.mist` + `.mist i` | 第一幕 | 两层红黑雾团，外层给 GSAP 做推进/扑面，内层跑 `mist-drift-a/b` 慢漂 |
+| `.dust` + `dust-rise` | 第一幕 | 26 颗粒子从下往上飘、到顶淡出（位置/速度在 JS 里随机） |
+| `.archive-bg` 渐变 | 第二幕 | 四层径向渐变叠出「暗红穹顶 + 两侧烛光」的空间感 |
+| `.archive-book::before` | 第二幕 | 书脊 + 左右纸面反光 + 纸面底色，画出铺满整屏的「档案页」 |
+| `.void-fog-back/front` | 第三幕 | 虚空红雾改成径向渐变，仍保留原来的 `fog-drift-a/b` 漂移 |
+| `BackgroundFX` | 第二幕新增 | 复用已有的 `components/backgroundFX.js`：红雾 + 金雾 + 微光 + 粒子 |
+
+全部动画只动 `transform` / `opacity`；`pointer-events:none`，不挡任何点击。
+
+### 两个踩过的坑（都写在代码注释里了）
+
+1. **`.mist` 为什么是「外层 + 内层 `i`」两层？**
+   CSS 动画的优先级**高于**普通声明，如果 GSAP 动的那层同时也跑着 CSS 漂移动画，
+   两边会互相覆盖。所以外层交给 GSAP、内层跑 CSS 动画，互不干扰。
+2. **`.archive-book` 是空的，但必须留着。**
+   它同时是「点任意处 → 进入下一幕」的**整屏点击区**（实测 1440×900，点击仍能进第三幕）。
+   删图不能顺手把它删掉，否则就真的卡在第二幕了。
+
+### 关于「npm run build」
+
+这个项目**没有构建步骤**（不是 React/Vite 工程，没有 `package.json`），
+所以没有 build 可跑 —— 改完刷新就是最新版，也就不存在 build 失败。
+等价的验证是：桌面 + 手机逐幕打开，**控制台 0 报错**，图片全部加载成功。

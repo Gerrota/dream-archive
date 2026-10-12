@@ -1,13 +1,11 @@
 /* =========================================================
-   第一幕 · 庄园（场景样式）
+   第一幕 · 黑雾（场景样式）
+   这一幕**不使用任何图片**：黑色底 + 纯 CSS 红黑雾气 + 漂浮粒子。
    全局样式在 src/style.css
    ========================================================= */
 
 .scene{
-  --bg-blur: 20px;      /* 环境底模糊 */
-  --bg-bright: .42;     /* 环境底亮度 */
-  --mansion-bright: .95;/* 庄园亮度 */
-  --fog-blur-back: 6px; /* 后层雾模糊 */
+  --fog-blur-back: 6px; /* 后层雾的模糊量 */
 }
 
 .scene{
@@ -27,66 +25,90 @@
 }
 
 
-/* ---------------- 环境底（整体图 → 模糊气氛） ---------------- */
-.scene .bg{
-  position:absolute; inset:-6%;
-  width:112%; height:112%;
-  object-fit:cover;
-  filter:blur(var(--bg-blur)) brightness(var(--bg-bright)) saturate(1.15);
-  opacity:0;
-}
-
-
-/* ---------------- 庄园 ---------------- */
-.scene .mansion{
-  position:absolute; inset:0;
-  width:100%; height:100%;
-  object-fit:contain;              /* 保证城堡不被裁掉 */
-  object-position:50% 62%;
-  opacity:0;
-  filter:brightness(var(--mansion-bright)) contrast(1.08) saturate(.95);
-}
-
-
 /* ---------------- 雾 ---------------- */
-.scene .fog-layer{
+
+/* ---------------- 雾（纯 CSS，不再用图片） ----------------
+   每层都是「外层 .mist + 内层 i」两层，这是刻意的：
+     · 外层留给 GSAP —— 点击时的推进 / 扑面动的是它
+     · 内层自己跑 CSS 漂移动画
+   两个动画分别写在两个元素上，才不会互相覆盖。
+   （CSS 动画优先级高于普通声明，写在同一层会把 GSAP 的 transform 顶掉） */
+.scene .mist{
   position:absolute;
-  inset:-15%;
-  width:130%; height:130%;
+  inset:-18%;
   z-index:3;
-  opacity:0;
+  opacity:0;                       /* 由开场时间线淡入 */
   pointer-events:none;
   mix-blend-mode:screen;           /* 红雾只加光，不糊黑画面 */
   will-change:transform,opacity;
 }
 
-.scene .fog-layer .fog-img{
+.scene .mist i{
   display:block;
   width:100%; height:100%;
-  object-fit:cover;
-  animation:fog-drift-a 26s ease-in-out infinite alternate;
 }
 
-.scene .fog-back{
+/* 后层雾：大范围暗红，慢、糊 */
+.scene .mist-back{
   z-index:3;
   filter:blur(var(--fog-blur-back)) brightness(1.05) saturate(.9);
 }
-.scene .fog-back .fog-img{ animation-duration:34s; }
-.scene .fog-back .fog-img{ animation-name:fog-drift-b; }
+.scene .mist-back i{
+  background:
+    radial-gradient(58% 44% at 28% 62%, rgba(126,16,26,.55), rgba(60,6,12,.22) 46%, rgba(0,0,0,0) 74%),
+    radial-gradient(52% 40% at 76% 38%, rgba(96,10,22,.42), rgba(0,0,0,0) 70%);
+  animation:mist-drift-a 34s ease-in-out infinite alternate;
+}
 
-.scene .fog-front{
+/* 前层雾：主体氛围，更亮更快 */
+.scene .mist-front{
   z-index:5;
   filter:brightness(1.45) saturate(1.15);
 }
-.scene .fog-front .fog-img{ animation-duration:21s; animation-direction:alternate-reverse; }
+.scene .mist-front i{
+  background:
+    radial-gradient(46% 34% at 50% 74%, rgba(178,26,38,.50), rgba(110,10,20,.18) 48%, rgba(0,0,0,0) 76%),
+    radial-gradient(38% 30% at 22% 30%, rgba(150,20,34,.32), rgba(0,0,0,0) 72%),
+    radial-gradient(34% 26% at 82% 62%, rgba(140,16,30,.28), rgba(0,0,0,0) 72%);
+  animation:mist-drift-b 21s ease-in-out infinite alternate-reverse;
+}
 
-@keyframes fog-drift-a{
+@keyframes mist-drift-a{
   from{ transform:translate3d(-3%,0,0) scale(1.08); }
   to  { transform:translate3d(3%,-1.5%,0) scale(1.22); }
 }
-@keyframes fog-drift-b{
-  from{ transform:translate3d(2.5%,1%,0) scale(1.2) rotate(-1.5deg); }
+@keyframes mist-drift-b{
+  from{ transform:translate3d(2.5%,1%,0) scale(1.18) rotate(-1.5deg); }
   to  { transform:translate3d(-2.5%,-1%,0) scale(1.06) rotate(1.5deg); }
+}
+
+
+/* ---------------- 漂浮粒子（纯 CSS，不用图片） ----------------
+   每个粒子只是一颗 span，位置/大小/速度/延迟在 JS 里随机（见 opening.js 的 makeDust）。
+   从下往上慢慢飘，到顶上淡掉 —— 只动 transform / opacity。 */
+.scene .dust{
+  position:absolute;
+  inset:0;
+  z-index:6;
+  overflow:hidden;
+  pointer-events:none;
+}
+.scene .dust span{
+  position:absolute;
+  border-radius:50%;
+  background:rgba(255,170,160,.9);
+  box-shadow:0 0 6px rgba(220,80,80,.55);
+  opacity:0;
+  animation-name:dust-rise;
+  animation-timing-function:linear;
+  animation-iteration-count:infinite;
+}
+@keyframes dust-rise{
+  0%  { transform:translate3d(0,0,0);        opacity:0; }
+  12% { opacity:var(--peak, .4); }
+  50% { transform:translate3d(6px,-46vh,0);  opacity:var(--peak, .4); }
+  88% { opacity:var(--peak, .4); }
+  100%{ transform:translate3d(-4px,-92vh,0); opacity:0; }
 }
 
 
@@ -230,9 +252,10 @@
 /* ---------------- 小屏微调 ---------------- */
 @media (max-width:640px){
   .scene .content{ top:12%; }
-  .scene .fog-layer{ filter:saturate(1.1); }
+  .scene .mist i{ opacity:.92; }
+  .scene .dust{ opacity:.8; }
   .scene .grain{ opacity:.04; }
 }
 @media (prefers-reduced-motion:reduce){
-  .scene .fog-layer .fog-img, .grain, .enter-btn::after{ animation:none; }
+  .scene .mist i, .scene .dust span, .grain, .enter-btn::after{ animation:none; }
 }
