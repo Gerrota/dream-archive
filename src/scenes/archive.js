@@ -22,7 +22,7 @@ export function loadArchiveScene(mount) {
     <div class="archive-bg"></div>
 
     <div class="archive-book">
-      <img src="src/assets/archive-book.png" alt="档案古书">
+      <img src="src/assets/archive-book.webp" alt="档案古书">
     </div>
 
 
@@ -69,12 +69,12 @@ export function loadArchiveScene(mount) {
     </div>
 
     <!-- 物件：只留鸢尾花。耳机 / 徽章 / 信纸的图和样式都还留着，想加回来直接补一行
-    <img class="archive-item headphone" src="src/assets/headphone.png" alt="耳机">
-    <img class="archive-item badge"     src="src/assets/badge.png"     alt="徽章">
-    <img class="archive-item letter"    src="src/assets/letter.png"    alt="信纸">
+    <img class="archive-item headphone" src="src/assets/headphone.webp" alt="耳机">
+    <img class="archive-item badge"     src="src/assets/badge.webp"     alt="徽章">
+    <img class="archive-item letter"    src="src/assets/letter.webp"    alt="信纸">
     -->
     <div class="iris-wrap">
-      <img class="archive-item iris" src="src/assets/iris.png" alt="鸢尾">
+      <img class="archive-item iris" src="src/assets/iris.webp" alt="鸢尾">
     </div>
 
   `;

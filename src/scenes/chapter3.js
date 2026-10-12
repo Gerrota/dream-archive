@@ -98,7 +98,7 @@ export function loadChapter3Scene(mount, ctx) {
 
           <div class="iris-wrap">
             <div class="iris" aria-hidden="true">
-              <img src="src/assets/iris.png" alt="">
+              <img src="src/assets/iris.webp" alt="">
             </div>
           </div>
 

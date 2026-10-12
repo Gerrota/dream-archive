@@ -70,16 +70,21 @@ opening.js                 archive.js        chapter3.js        │   style.js
     │
     └── assets/                所有图片 + 背景音乐
         ├── bgm.mp3            ★ 把歌放这里（还没有文件时开关会显示「缺音乐」）
-        ├── scene.png          第一幕·环境底
-        ├── mansion.png        第一幕·庄园
-        ├── fog.png            第一幕·红雾
-        ├── archive-room.png   第二幕·书房
-        ├── archive-book.png   第二幕·古书
-        ├── iris.png           第二幕·鸢尾
-        ├── headphone.png      第二幕·耳机 ⚠️见下
-        ├── badge.png          第二幕·徽章
-        ├── letter.png         第二幕·信纸
-        └── envelope.png       第二幕·信封（暂未使用）
+        ├── scene.webp         第一幕·环境底        161 KB
+        ├── mansion.webp       第一幕·庄园          539 KB（有透明）
+        ├── fog.webp           第一幕·红雾          269 KB（有透明）
+        ├── archive-room.webp  第二幕·书房          209 KB
+        ├── archive-book.webp  第二幕·古书          183 KB
+        ├── iris.webp          第二幕·鸢尾          102 KB（500x500）
+        ├── headphone.webp     第二幕·耳机 ⚠️见下   131 KB
+        ├── badge.webp         第二幕·徽章          131 KB
+        ├── letter.webp        第二幕·信纸           29 KB
+        └── envelope.webp      第二幕·信封（未使用）  92 KB
+
+    ★ 全部图片已从 PNG 转成 WebP：11.6 MB → 1.85 MB（约 6.4 倍）。
+      首屏那三张 5.65 MB → 947 KB，而第一幕的动画本来就要等这三张预加载完
+      （见 opening.js 的 ASSETS），所以这一项直接决定了打开速度。
+      压缩前的原始 PNG 在项目里的 原图PNG/ 文件夹（已 gitignore，不进仓库）。
 ```
 
 ---
@@ -637,6 +642,21 @@ NOTICE / 02  …
 1. ⚠️ 你当时给的「耳机」和「徽章」是同一个文件（`13_29_44-2.png`），所以 `headphone.png` 就是 `badge.png` 的副本。这两个现在都没在用了，哪天要用记得换一张真的耳机图。
 2. **只留鸢尾花**是这一版的决定：耳机 / 徽章 / 信纸的图片、CSS 位置、交互绑定都还在，想加回来把 `archive.js` 里 markup 的注释打开、再补一段 `on(".headphone", ...)` 就行。
 3. `envelope.png`（信封）同样入库未用。
+
+### 图片压缩（PNG → WebP）
+
+| | 压缩前 | 压缩后 |
+|---|---|---|
+| src/assets 合计 | 11.6 MB | **1.85 MB** |
+| 首屏（scene + mansion + fog） | 5.65 MB | **947 KB** |
+
+- 不透明的照片类用**有损 WebP q84~85**；带透明边缘的抠图用 **q94**（边缘更干净）。
+- **透明通道逐像素完全一致**（WebP 的 alpha 是无损存的），不会出现黑边。
+- 画质用「合成后 PSNR」量（把图叠到黑底、也就是屏幕上真实看到的样子）：
+  fog 43.1 dB、archive-book 38.5、scene 38.5、iris 37.5、mansion 36.8 ——
+  基本都在「很难看出差别」的区间。
+- `iris.webp` 按需求压到 500x500、**101 KB**（< 300 KB）。
+- 原始 PNG 全部保留在 `原图PNG/`（不进仓库），随时能换回去。
 
 **图片我按显示尺寸压过一遍**：四个物件（鸢尾 / 耳机 / 徽章 / 信纸）统一压到 512px —— 它们最大也只显示 180px，实测渲染几乎逐像素一致。`archive-book.png` 现在是**整屏主视觉**，所以保留了原始 1448×1086 没有压，否则铺满后会发虚。原图都还在 `Downloads`，想换回更大的重新拷一次覆盖即可。
 

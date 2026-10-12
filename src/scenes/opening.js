@@ -43,9 +43,9 @@ export const OPENING_CONFIG = {
 };
 
 const ASSETS = [
-  "src/assets/scene.png",
-  "src/assets/mansion.png",
-  "src/assets/fog.png"
+  "src/assets/scene.webp",
+  "src/assets/mansion.webp",
+  "src/assets/fog.webp"
 ];
 
 const CONFIG = OPENING_CONFIG;
@@ -55,14 +55,14 @@ export function loadOpeningScene(mount) {
   el.className = "scene";
   el.innerHTML = `
     <div class="camera">
-      <img class="bg" src="src/assets/scene.png" alt="">
-      <img class="mansion" src="src/assets/mansion.png" alt="庄园">
+      <img class="bg" src="src/assets/scene.webp" alt="">
+      <img class="mansion" src="src/assets/mansion.webp" alt="庄园">
     </div>
 
     <div class="dark"></div>
 
-    <div class="fog-layer fog-back"><img class="fog-img" src="src/assets/fog.png" alt=""></div>
-    <div class="fog-layer fog-front"><img class="fog-img" src="src/assets/fog.png" alt=""></div>
+    <div class="fog-layer fog-back"><img class="fog-img" src="src/assets/fog.webp" alt=""></div>
+    <div class="fog-layer fog-front"><img class="fog-img" src="src/assets/fog.webp" alt=""></div>
 
     <div class="vignette"></div>
     <div class="grain"></div>
