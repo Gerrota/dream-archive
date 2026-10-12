@@ -1,0 +1,86 @@
+/* =========================================================
+   资料卡弹窗
+   ========================================================= */
+
+.popup{
+  position:fixed;
+  inset:0;
+  z-index:9500;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:6vw;
+  background:rgba(0,0,0,.62);
+  backdrop-filter:blur(3px);
+}
+
+.popup .paper{
+  position:relative;
+  width:min(520px, 100%);
+  max-height:82vh;
+  overflow:auto;
+  padding:38px 42px 30px;
+  color:#2a1c14;
+  background:
+    linear-gradient(rgba(0,0,0,.02), rgba(0,0,0,.06)),
+    #efe3cd;
+  border:1px solid #c9b394;
+  box-shadow:0 30px 80px rgba(0,0,0,.75), inset 0 0 60px rgba(160,130,90,.25);
+}
+
+.popup .paper h2{
+  font-size:22px;
+  font-weight:600;
+  letter-spacing:.24em;
+  margin-bottom:20px;
+  color:#6d1f22;
+}
+
+.popup .paper p{
+  font-size:15px;
+  line-height:2.1;
+  white-space:pre-line;
+  color:#3b2a1e;
+}
+
+.popup .popup-close{
+  display:block;
+  margin:28px 0 0 auto;
+  padding:9px 24px;
+  background:transparent;
+  border:1px solid #a8917a;
+  color:#5a4130;
+  font-family:inherit;
+  font-size:13px;
+  letter-spacing:.3em;
+  text-indent:.3em;
+  cursor:pointer;
+  transition:.3s;
+}
+.popup .popup-close:hover{
+  background:#6d1f22;
+  border-color:#6d1f22;
+  color:#f4ead8;
+}
+
+/* 打字机光标 */
+.type-cursor{
+  display:inline-block;
+  width:.55em;
+  height:1em;
+  margin-left:.06em;
+  vertical-align:-.12em;
+  background:currentColor;
+  opacity:.8;
+  animation:type-blink .85s steps(1) infinite;
+}
+@keyframes type-blink{
+  0%,50%{ opacity:.8; }
+  51%,100%{ opacity:0; }
+}
+
+@media (max-width:640px){
+  .popup .paper{ padding:28px 24px 22px; }
+  .popup .paper h2{ font-size:18px; letter-spacing:.18em; }
+  .popup .paper p{ font-size:14px; line-height:2; }
+}

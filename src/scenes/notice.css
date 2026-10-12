@@ -1,0 +1,385 @@
+/* =========================================================
+   第五幕 · WORDS 入口须知（NoticePage）
+   全局样式在 src/style.css
+   ---------------------------------------------------------
+   所有规则都带 .notice-page 前缀 —— 场景样式是全局生效的，
+   不加前缀会串到别的场景（.notice-item / .countdown 这种名字也容易撞）。
+   ========================================================= */
+
+.notice-page{
+
+  position:fixed;
+
+  inset:0;
+
+  overflow-y:auto;
+
+  overflow-x:hidden;
+
+  -webkit-overflow-scrolling:touch;
+
+  background:
+  radial-gradient(
+    circle at top,
+    #211010,
+    #050505 55%
+  );
+
+  color:#eee;
+
+}
+
+/* 内容层：压在背景之上 */
+.notice-page .notice-content{
+
+  position:relative;
+
+  z-index:2;
+
+}
+
+/* hidden 属性要压得住后面的 display 规则 */
+.notice-page [hidden]{ display:none !important; }
+
+
+/* 细滚动条 */
+.notice-page::-webkit-scrollbar{ width:6px; }
+.notice-page::-webkit-scrollbar-track{ background:transparent; }
+.notice-page::-webkit-scrollbar-thumb{
+  background:rgba(181,139,69,.4);
+  border-radius:3px;
+}
+
+
+/* ---------------- 封面 ---------------- */
+
+.notice-page .notice-cover{
+
+  height:70vh;
+
+  display:flex;
+
+  flex-direction:column;
+
+  align-items:center;
+
+  justify-content:center;
+
+  text-align:center;
+
+  padding:0 24px;
+
+}
+
+.notice-page .notice-archive-title{
+
+  letter-spacing:12px;
+
+  text-indent:12px;
+
+  font-size:14px;
+
+  opacity:.5;
+
+}
+
+.notice-page .notice-cover h1{
+
+  font-size:64px;
+
+  font-weight:300;
+
+  letter-spacing:20px;
+
+  text-indent:20px;
+
+  margin:40px 0;
+
+}
+
+.notice-page .countdown p{
+
+  font-size:12px;
+
+  letter-spacing:8px;
+
+  text-indent:8px;
+
+  opacity:.5;
+
+}
+
+.notice-page .countdown h2{
+
+  font-size:70px;
+
+  font-weight:300;
+
+  letter-spacing:15px;
+
+  text-indent:15px;
+
+  margin:20px 0 0;
+
+  font-variant-numeric:tabular-nums;
+
+}
+
+
+/* ---------------- 向下滑动引导 ---------------- */
+
+/* 离屏幕底多远。做成变量是为了下面 @supports 里能再叠一层安全区，
+   手机横条 / 底部浏览器栏不会把提示盖住。 */
+.notice-page{ --notice-hint-bottom:26px; }
+
+.notice-page .notice-scroll-hint{
+
+  /* fixed 贴视口底部（不是贴封面底部）—— 往下滑的提示就该一直在脚下，
+     滚过 24px 之后由 JS 加 .scrolled 把它淡掉，不会一直赖着。 */
+  position:fixed;
+
+  left:0;
+
+  right:0;
+
+  bottom:var(--notice-hint-bottom);
+
+  z-index:4;
+
+  display:flex;
+
+  flex-direction:column;
+
+  align-items:center;
+
+  gap:12px;
+
+  pointer-events:none;      /* 只是提示，别挡着滑动 */
+
+  color:rgba(232,220,196,.55);
+
+  font-size:12px;
+
+  letter-spacing:8px;
+
+  text-indent:8px;          /* 补掉 letter-spacing 在右边多出来的那一格 */
+
+  /* 透明度只归这一层管 —— CSS 动画优先于普通声明，
+     所以上下浮动必须放在里面的箭头上，放这层会把淡出顶掉 */
+  opacity:1;
+
+  transition:opacity .45s ease;
+
+}
+
+/* 有底部安全区（刘海屏 / 横条）时再往下让开一点。
+   不支持 env() 的老浏览器会整条跳过，上面那句仍生效。 */
+@supports (bottom: env(safe-area-inset-bottom)) {
+
+  .notice-page .notice-scroll-hint{
+    bottom:calc(var(--notice-hint-bottom) + env(safe-area-inset-bottom));
+  }
+
+}
+
+/* 往下滚过一点 → 收起来 */
+.notice-page.scrolled .notice-scroll-hint{ opacity:0; }
+
+/* 外层负责上下浮动 */
+.notice-page .notice-scroll-arrow{
+
+  animation:notice-hint-bob 1.9s ease-in-out infinite;
+
+}
+
+/* 内层负责画那个 V 形箭头 */
+.notice-page .notice-scroll-arrow i{
+
+  display:block;
+
+  width:10px;
+
+  height:10px;
+
+  border-right:1px solid currentColor;
+
+  border-bottom:1px solid currentColor;
+
+  transform:rotate(45deg);
+
+}
+
+@keyframes notice-hint-bob{
+
+  0%, 100%{ transform:translateY(-2px); opacity:.45; }
+
+  50%     { transform:translateY(5px);  opacity:1; }
+
+}
+
+
+/* ---------------- 须知列表 ---------------- */
+
+.notice-page .notice-list{
+
+  max-width:900px;
+
+  margin:0 auto;
+
+  padding:50px 30px;
+
+}
+
+.notice-page .notice-item{
+
+  padding:45px 0;
+
+  border-bottom:1px solid rgba(255,255,255,.15);
+
+}
+
+.notice-page .notice-number{
+
+  font-size:12px;
+
+  letter-spacing:6px;
+
+  color:#b58b45;
+
+  margin-bottom:20px;
+
+}
+
+.notice-page .notice-item p{
+
+  white-space:pre-line;
+
+  font-size:20px;
+
+  line-height:2;
+
+  letter-spacing:3px;
+
+}
+
+
+/* ---------------- 页脚 ---------------- */
+
+.notice-page .notice-footer{
+
+  min-height:40vh;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  padding:0 24px;
+
+}
+
+.notice-page .notice-footer p{
+
+  letter-spacing:8px;
+
+  text-indent:8px;
+
+  opacity:.5;
+
+}
+
+
+/* ---------------- 左上角常驻返回 ---------------- */
+
+.notice-page .notice-back{
+
+  position:fixed;
+
+  left:18px;
+
+  top:16px;
+
+  z-index:5;
+
+  background:rgba(0,0,0,.35);
+
+  border:1px solid rgba(181,139,69,.55);
+
+  border-radius:2px;
+
+  color:rgba(255,255,255,.85);
+
+  font-family:inherit;
+
+  font-size:13px;
+
+  padding:8px 16px;
+
+  letter-spacing:2px;
+
+  cursor:pointer;
+
+  backdrop-filter:blur(3px);
+
+  transition:.35s;
+
+}
+
+.notice-page .notice-back:hover{
+
+  background:rgba(181,139,69,.22);
+
+  border-color:rgba(255,214,150,.8);
+
+  color:#fff;
+
+}
+
+
+/* ---------------- 手机 ---------------- */
+
+@media (max-width:768px){
+
+  .notice-page .notice-back{ left:12px; top:12px; font-size:12px; padding:7px 12px; letter-spacing:1px; }
+
+  .notice-page .notice-cover h1{
+
+    font-size:40px;
+
+    letter-spacing:12px;
+
+    text-indent:12px;
+
+  }
+
+  .notice-page .notice-archive-title{ letter-spacing:8px; text-indent:8px; font-size:12px; }
+
+  .notice-page .countdown h2{
+
+    font-size:50px;
+
+    letter-spacing:10px;
+
+    text-indent:10px;
+
+  }
+
+  .notice-page{ --notice-hint-bottom:16px; }
+  .notice-page .notice-scroll-hint{ font-size:11px; letter-spacing:5px; text-indent:5px; gap:9px; }
+
+  .notice-page .notice-list{ padding:36px 26px; }
+  .notice-page .notice-item{ padding:34px 0; }
+  .notice-page .notice-item p{
+
+    font-size:16px;
+
+    letter-spacing:2px;
+
+    line-height:1.9;
+
+  }
+
+  .notice-page .notice-footer{ min-height:34vh; }
+
+}

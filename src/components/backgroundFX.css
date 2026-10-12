@@ -1,0 +1,200 @@
+/* =========================================================
+   BackgroundFX · 全局背景系统
+   ---------------------------------------------------------
+   所有选择器都带 .background-fx 前缀，@keyframes 名字也加了 bg- 前缀 ——
+   CSS 是全局生效的，不加前缀会串到别的场景（.fog / .particles 这种名字很容易撞）。
+   ========================================================= */
+
+.background-fx{
+
+  position:fixed;
+
+  inset:0;
+
+  overflow:hidden;
+
+  pointer-events:none;
+
+  z-index:0;
+
+}
+
+
+/* ---------------- 雾（大范围模糊色块） ---------------- */
+
+.background-fx .fog{
+
+  position:absolute;
+
+  border-radius:50%;
+
+  filter:blur(120px);
+
+  opacity:.25;
+
+}
+
+.background-fx .fog-red{
+
+  width:600px;
+
+  height:600px;
+
+  background:#8b1515;
+
+  left:-200px;
+
+  top:20%;
+
+  animation:bg-redMove 18s infinite alternate;
+
+}
+
+.background-fx .fog-gold{
+
+  width:500px;
+
+  height:500px;
+
+  background:#b58b45;
+
+  right:-200px;
+
+  bottom:10%;
+
+  opacity:.12;
+
+  animation:bg-goldMove 20s infinite alternate;
+
+}
+
+@keyframes bg-redMove{
+
+  from{ transform:translate(0,0); }
+
+  to  { transform:translate(180px,-100px); }
+
+}
+
+@keyframes bg-goldMove{
+
+  from{ transform:translate(0,0); }
+
+  to  { transform:translate(-120px,-80px); }
+
+}
+
+
+/* ---------------- 微光 ---------------- */
+
+.background-fx .light-beam{
+
+  position:absolute;
+
+  width:200px;
+
+  height:100vh;
+
+  left:50%;
+
+  transform:rotate(20deg);
+
+  background:linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,255,255,.03),
+    transparent
+  );
+
+  animation:bg-beamMove 12s infinite;
+
+}
+
+@keyframes bg-beamMove{
+
+  from{ left:-20%; }
+
+  to  { left:120%; }
+
+}
+
+
+/* ---------------- 金色粒子 ---------------- */
+
+.background-fx .particles{
+
+  position:absolute;
+
+  inset:0;
+
+}
+
+.background-fx .particles span{
+
+  position:absolute;
+
+  width:3px;
+
+  height:3px;
+
+  background:#d4b36a;
+
+  border-radius:50%;
+
+  opacity:.5;
+
+  animation:bg-floatParticle linear infinite;
+
+}
+
+@keyframes bg-floatParticle{
+
+  from{
+    transform:translateY(100vh);
+    opacity:0;
+  }
+
+  20%{
+    opacity:var(--peak, .6);
+  }
+
+  to{
+    transform:translateY(-20vh);
+    opacity:0;
+  }
+
+}
+
+
+/* ---------------- 小屏：色块缩小、模糊减轻，省电 ---------------- */
+
+@media (max-width:768px){
+
+  .background-fx .fog{ filter:blur(80px); }
+
+  .background-fx .fog-red{
+    width:380px;
+    height:380px;
+    left:-160px;
+  }
+
+  .background-fx .fog-gold{
+    width:320px;
+    height:320px;
+    right:-140px;
+  }
+
+  .background-fx .light-beam{ width:120px; }
+
+}
+
+
+@media (prefers-reduced-motion:reduce){
+
+  .background-fx .fog,
+  .background-fx .light-beam,
+  .background-fx .particles span{
+    animation:none;
+  }
+
+}

@@ -1,0 +1,413 @@
+/* =========================================================
+   第二幕 · 档案室（场景样式）
+   全局样式在 src/style.css
+   ========================================================= */
+
+.archive-scene{
+
+  position:fixed;
+
+  inset:0;
+
+  overflow:hidden;
+
+  background:#120909;
+
+  color:#f4ead8;
+
+  isolation:isolate;          /* 把下面的混合模式关在本场景里 */
+
+  /* 书铺满整屏的放大倍数：改这个数就能调书的远近 */
+  --book-zoom:1.55;
+
+}
+
+
+.archive-scene .archive-bg{
+
+
+  position:absolute;
+
+  inset:0;
+
+
+  background-image:
+  url("../assets/archive-room.png");
+
+
+  background-size:cover;
+
+  background-position:center;
+
+
+}
+
+/* 让房间整体再压暗一点，给物件让出层次 */
+.archive-scene .archive-bg::after{
+
+  content:"";
+
+  position:absolute;
+
+  inset:0;
+
+  background:radial-gradient(120% 90% at 50% 55%,
+      rgba(0,0,0,.15) 0%,
+      rgba(0,0,0,.45) 60%,
+      rgba(0,0,0,.85) 100%);
+
+}
+
+
+/* ---------------- 古书：铺满整屏 ---------------- */
+/* 原来是 left:50% / bottom:5% / translateX(-50%) / width:50%，
+   现在改成 inset:0 铺满，再用 --book-zoom 放大到书页充满画面 */
+.archive-scene .archive-book{
+
+  position:absolute;
+
+  inset:0;
+
+  width:100%;
+
+  height:100%;
+
+  z-index:1;
+
+  cursor:pointer;
+
+  pointer-events:none;        /* 进场动画播完才放开，见 .ready */
+
+}
+
+
+
+.archive-scene .archive-book img{
+
+  width:100%;
+
+  height:100%;
+
+  display:block;
+
+  object-fit:cover;
+
+  object-position:50% 30%;    /* 对准书页所在的那条横带 */
+
+  /* 不透明 PNG、背景接近纯黑，用 lighten 让黑底融进暗房间 */
+  mix-blend-mode:lighten;
+
+  transform:scale(var(--book-zoom));
+
+  transition:filter .5s;
+
+}
+
+.archive-scene .archive-book:hover img{
+
+  filter:brightness(1.1) saturate(1.05);
+
+}
+
+/* 只压书页四边的暗角：书铺满整屏后整幅会太亮，氛围会丢。
+   层级：书(z1) → 这个暗角 → 资料/物件(z2/z3)，所以物件不会被压暗 */
+.archive-scene .archive-book::after{
+
+  content:"";
+
+  position:absolute;
+
+  inset:0;
+
+  pointer-events:none;
+
+  background:
+    radial-gradient(135% 100% at 50% 46%,
+      rgba(0,0,0,0) 26%,
+      rgba(12,5,5,.42) 68%,
+      rgba(8,3,3,.88) 100%),
+    linear-gradient(rgba(10,4,4,.35), rgba(10,4,4,.35));
+
+}
+
+/* 进场动画播完 → 书可点 */
+.archive-scene.ready .archive-book{
+
+  pointer-events:auto;
+
+}
+
+
+.archive-scene .profile{
+
+
+  position:absolute;
+
+
+  right:12%;
+
+  top:20%;
+
+
+  width:320px;
+
+
+  z-index:4;                  /* 高于鸢尾花，花再大也不会盖住字 */
+
+
+  font-family:
+  "Noto Serif SC",
+  serif;
+
+
+  text-shadow:
+  0 2px 24px rgba(0,0,0,.95);
+
+
+}
+
+/* 资料后面的柔和暗底，保证压在书页上也看得清 */
+.archive-scene .profile::before{
+
+  content:"";
+
+  position:absolute;
+
+  inset:-46px -34px;
+
+  z-index:-1;
+
+  pointer-events:none;
+
+  background:radial-gradient(62% 62% at 52% 46%,
+      rgba(0,0,0,.74) 0%,
+      rgba(0,0,0,.46) 55%,
+      rgba(0,0,0,0) 78%);
+
+}
+
+
+
+.archive-scene .profile h1{
+
+  font-size:72px;
+
+  letter-spacing:25px;
+
+  font-weight:400;
+
+}
+
+
+
+.archive-scene .profile h3{
+
+  font-weight:600;
+
+  font-size:19px;
+
+  letter-spacing:8px;
+
+  color:#f4ead8;
+
+  min-height:1.2em;          /* 打字过程中高度不跳 */
+
+}
+
+
+
+.archive-scene .info{
+
+
+  margin-top:40px;
+
+  line-height:2.1;
+
+  font-size:19px;            /* 原 15px → 放大 */
+
+  font-weight:700;           /* 原继承常规 → 加粗 */
+
+  color:#fff;
+
+
+}
+
+.archive-scene .info p{
+
+  text-shadow:
+    0 2px 10px rgba(0,0,0,.98),
+    0 0 26px rgba(0,0,0,.9);
+
+}
+
+
+
+.archive-scene .archive-item{
+
+
+  position:absolute;
+
+  z-index:3;
+
+  cursor:pointer;
+
+  pointer-events:none;       /* 进场动画播完才放开，见 .ready */
+
+
+  transition:.4s;
+
+
+  /* 这几张是透明底 PNG，不用混合模式 */
+
+}
+
+
+
+.archive-scene .archive-item:hover{
+
+
+  transform:
+  scale(1.08);
+
+
+  filter:
+  drop-shadow(
+  0 0 20px #a33
+  );
+
+
+}
+
+/* 进场动画播完 → 物件可点击 */
+.archive-scene.ready .archive-item{
+
+  pointer-events:auto;
+
+}
+
+
+/* ---------------- 鸢尾花：屏幕正中，放大 ---------------- */
+/* 用 CSS 的 translate 属性做居中（不是 transform），
+   这样 GSAP 动 transform 做入场/悬停时互不干扰 */
+/* 定位和居中放在外层容器上。
+   原因：GSAP 给元素写 transform 时会把 translate/rotate/scale 三个独立属性清成 none，
+   如果居中直接写在图片上，入场动画那几秒花会被顶偏半屏（实测偏 280px）。
+   现在 GSAP 只动里面的 img，容器的 translate 不受影响。 */
+.archive-scene .iris-wrap{
+
+  position:absolute;
+
+  left:50%;
+
+  top:52%;
+
+  /* 用 transform（translate 属性 iOS14.1 以下不支持）；这层 GSAP 不动 */
+  transform:translate(-50%, -50%);
+
+  z-index:3;
+
+  pointer-events:none;        /* 让里面的 img 自己收事件 */
+
+}
+
+.archive-scene .iris{
+
+  position:static;
+
+  display:block;
+
+  /* 上限 560px；窗口变窄会自动缩小，保证花的右缘永远压不到右侧资料。
+     资料宽 320px、右边距 12vw（即左缘在 88vw-320px），
+     花居中 → 宽度必须 < 76vw - 640px，取不到就退到 200px 兜底 */
+  width:max(200px, min(560px, calc(76vw - 640px)));
+
+}
+
+
+/* ---------------- 下面三个物件当前没在用（只留鸢尾花） ---------------- */
+/* 位置样式先留着，想加回来把 archive.js 里 markup 的注释打开即可 */
+.archive-scene .headphone{
+
+  right:15%;
+
+  bottom:25%;
+
+  width:120px;
+
+}
+
+.archive-scene .badge{
+
+  left:20%;
+
+  top:25%;
+
+  width:120px;
+
+}
+
+.archive-scene .letter{
+
+  right:25%;
+
+  bottom:12%;
+
+  width:160px;
+
+  mix-blend-mode:lighten;
+
+}
+
+
+/* ---------------- 小屏适配（手机竖屏） ---------------- */
+@media (max-width:1100px){
+
+  /* 竖屏下书按宽度铺满，上下留出房间的暗部 */
+  .archive-scene{ --book-zoom:1.02; }
+
+  .archive-book img{ object-position:50% 45%; }
+
+
+  .profile{
+    right:auto;
+    left:50%;
+    top:4%;
+    width:88%;
+    transform:translateX(-50%);
+    text-align:center;
+  }
+
+  .profile::before{ inset:-26px -20px; }
+
+  .profile h1{ font-size:48px; letter-spacing:.26em; }
+  .profile h3{ font-size:18px; letter-spacing:.22em; }
+
+  .info{
+    margin-top:16px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:9px 12px;
+    line-height:1.75;
+    font-size:17px;           /* 手机端放大：12 → 14 → 17 */
+    font-weight:700;
+    text-align:left;
+  }
+
+  /* 「常驻」那行更长，横跨两列，不然会被格子挤断 */
+  .info p.staying{ grid-column:1 / -1; }
+
+  /* 指引标去掉后下方整片都空着，花改成底部对齐、按屏高自适应，能放更大 */
+  .archive-scene .iris-wrap{
+    top:auto;
+    bottom:8%;
+    transform:translate(-50%, 0);
+  }
+  .archive-scene .iris{
+    width:min(70vw, 36vh);
+  }
+
+}
+
+@media (prefers-reduced-motion:reduce){
+  .archive-item{ transition:none; }
+}

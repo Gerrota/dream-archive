@@ -1,0 +1,650 @@
+/* =========================================================
+   第四幕 · 风格档案（STYLE 页）
+   全局样式在 src/style.css
+   ---------------------------------------------------------
+   注意：所有规则都带 .style-page 前缀。
+   各场景的样式是全局生效的，不加前缀会串到别的场景去
+   （原稿里的 * / html / body 那几条也去掉了，那些项目全局已经有了）。
+   ========================================================= */
+
+.style-page{
+
+  position:fixed;
+
+  inset:0;
+
+  overflow-y:auto;
+
+  overflow-x:hidden;
+
+  scroll-behavior:smooth;
+
+  -webkit-overflow-scrolling:touch;
+
+  background:
+  radial-gradient(
+    circle at top,
+    #260909,
+    #050505 50%
+  );
+
+  color:#eee;
+
+}
+
+
+/* 细一点的滚动条 */
+.style-page::-webkit-scrollbar{ width:6px; }
+.style-page::-webkit-scrollbar-track{ background:transparent; }
+.style-page::-webkit-scrollbar-thumb{
+  background:rgba(181,139,69,.4);
+  border-radius:3px;
+}
+
+
+/* 内容层：压在背景之上 */
+.style-page .style-content{
+
+  position:relative;
+
+  z-index:2;
+
+}
+
+
+/* ---------------- 首页 ---------------- */
+
+/* 封面"解封"：小字淡入 → 标题展开 → 正文浮现（纯 CSS，不用 JS） */
+
+.style-page .cover-small{
+
+  animation:stFadeIn 2s ease both;
+
+}
+
+.style-page .style-cover h1{
+
+  animation:stTitleReveal 2s ease .3s both;
+
+}
+
+.style-page .style-cover p{
+
+  animation:stFadeIn 2s ease .8s both;
+
+}
+
+@keyframes stFadeIn{
+
+  from{ opacity:0; }
+
+  to  { opacity:1; }
+
+}
+
+@keyframes stTitleReveal{
+
+  from{ opacity:0; letter-spacing:40px; }
+
+  to  { opacity:1; letter-spacing:20px; }
+
+}
+
+
+.style-page .style-cover{
+
+  height:100vh;
+
+  display:flex;
+
+  flex-direction:column;
+
+  justify-content:center;
+
+  align-items:center;
+
+  text-align:center;
+
+  padding:30px;
+
+}
+
+.style-page .cover-small{
+
+  letter-spacing:12px;
+
+  font-size:14px;
+
+  opacity:.5;
+
+}
+
+.style-page .style-cover h1{
+
+  font-size:64px;
+
+  font-weight:300;
+
+  letter-spacing:20px;
+
+  text-indent:20px;
+
+  margin:40px 0;
+
+}
+
+.style-page .style-cover p{
+
+  font-size:20px;
+
+  line-height:2.2;
+
+}
+
+.style-page .scroll{
+
+  margin-top:80px;
+
+  font-size:12px;
+
+  letter-spacing:8px;
+
+  opacity:.5;
+
+}
+
+
+/* ---------------- 右侧导航 ---------------- */
+
+.style-page .section-nav{
+
+  position:fixed;
+
+  right:50px;
+
+  top:50%;
+
+  transform:translateY(-50%);
+
+  display:flex;
+
+  flex-direction:column;
+
+  gap:20px;
+
+  z-index:20;
+
+}
+
+.style-page .section-nav div{
+
+  font-size:12px;
+
+  letter-spacing:6px;
+
+  opacity:.5;
+
+  margin-bottom:20px;
+
+}
+
+.style-page .section-nav a{
+
+  text-decoration:none;
+
+  color:#fff;
+
+  opacity:.5;
+
+  transition:.3s;
+
+}
+
+.style-page .section-nav a:hover{
+
+  opacity:1;
+
+  color:#b58b45;
+
+}
+
+
+/* ---------------- 章节 ---------------- */
+
+/* 每段一个强调色：标签悬停、氛围底色都跟着它走 */
+.style-page .archive-section.love{
+  --accent:#9b3030;
+  background:radial-gradient(circle at center, rgba(120,20,20,.15), transparent 60%);
+}
+
+.style-page .archive-section.virtual{
+  --accent:#80658f;
+  background:radial-gradient(circle at center, rgba(100,70,130,.15), transparent 60%);
+}
+
+.style-page .archive-section.normal{
+  --accent:#b58b45;
+  background:radial-gradient(circle at center, rgba(170,130,50,.12), transparent 60%);
+}
+
+
+.style-page .archive-section{
+
+  min-height:100vh;
+
+  padding:120px 18%;
+
+  position:relative;
+
+}
+
+.style-page .archive-section::before{
+
+  content:"";
+
+  position:absolute;
+
+  left:10%;
+
+  top:15%;
+
+  height:70%;
+
+  width:1px;
+
+  background:rgba(255,255,255,.15);
+
+}
+
+.style-page .number{
+
+  color:var(--accent, inherit);
+
+  font-size:120px;
+
+  opacity:.1;
+
+  line-height:1;
+
+  font-family:serif;
+
+}
+
+.style-page .archive-section h1{
+
+  font-size:72px;
+
+  font-weight:300;
+
+  letter-spacing:20px;
+
+  text-indent:20px;
+
+  margin:0;
+
+}
+
+.style-page .subtitle{
+
+  letter-spacing:8px;
+
+  opacity:.5;
+
+  margin-top:20px;
+
+}
+
+.style-page .line{
+
+  height:1px;
+
+  background:rgba(255,255,255,.2);
+
+  margin:50px 0;
+
+}
+
+/* 每一组 = 一条档案记录：左侧一条竖线，像书里的章节线 */
+.style-page .group{
+
+  position:relative;
+
+  padding-left:30px;
+
+  margin-bottom:60px;
+
+}
+
+.style-page .group::before{
+
+  content:"";
+
+  position:absolute;
+
+  left:0;
+
+  top:0;
+
+  width:1px;
+
+  height:100%;
+
+  background:rgba(181,139,69,.35);
+
+}
+
+.style-page .group h3{
+
+  font-size:13px;
+
+  font-weight:400;
+
+  letter-spacing:6px;
+
+  color:rgba(214,178,106,.9);
+
+  margin-bottom:22px;
+
+}
+
+.style-page .tags{
+
+  display:block;          /* 一条一行，不再是横排的"标签墙" */
+
+}
+
+/* 不再是描边标签，而是档案里的关键词：不框、不描边，一行里用 | 分隔 */
+.style-page .archive-item{
+
+  display:inline-block;
+
+  font-size:20px;
+
+  letter-spacing:6px;
+
+  line-height:2;
+
+  color:#e8dcc4;
+
+  cursor:default;
+
+  transition:.3s;
+
+}
+
+/* 分隔符：压暗，不参与 hover */
+.style-page .entry-sep{
+
+  display:inline-block;
+
+  padding:0 12px;
+
+  font-size:16px;
+
+  color:rgba(255,255,255,.2);
+
+  line-height:2;
+
+  pointer-events:none;
+
+}
+
+/* 鼠标经过：像"这条记忆被唤醒"（发光 + 轻微上浮；
+   一行排布时用横向位移会撞到后面的分隔符，所以改成上浮） */
+.style-page .archive-item:hover{
+
+  color:#d4af65;
+
+  text-shadow:0 0 16px rgba(212,175,101,.55);
+
+  transform:translateY(-2px);
+
+}
+
+.style-page .description{
+
+  margin-top:80px;
+
+  max-width:650px;
+
+  line-height:2;
+
+}
+
+.style-page .description h4{
+
+  font-size:12px;
+
+  letter-spacing:6px;
+
+  opacity:.5;
+
+}
+
+.style-page .description p{
+
+  white-space:pre-line;
+
+  font-size:18px;
+
+  margin-top:16px;
+
+  opacity:.88;
+
+}
+
+
+/* ---------------- 结束 ---------------- */
+
+.style-page .style-end{
+
+  height:70vh;
+
+  display:flex;
+
+  flex-direction:column;
+
+  justify-content:center;
+
+  align-items:center;
+
+  text-align:center;
+
+  padding:0 24px;
+
+}
+
+.style-page .style-end p{
+
+  letter-spacing:8px;
+
+  opacity:.5;
+
+}
+
+.style-page .style-end h2{
+
+  font-weight:300;
+
+  line-height:2;
+
+  margin:40px 0 0;
+
+}
+
+.style-page .back-wheel{
+
+  margin-top:40px;
+
+  padding:15px 40px;
+
+  background:none;
+
+  border:1px solid #b58b45;
+
+  color:#fff;
+
+  font-family:inherit;
+
+  letter-spacing:5px;
+
+  text-indent:5px;
+
+  cursor:pointer;
+
+  transition:.35s;
+
+}
+
+.style-page .back-wheel:hover{
+
+  background:rgba(181,139,69,.18);
+
+  box-shadow:0 0 30px rgba(181,139,69,.3);
+
+}
+
+
+/* 左上角常驻返回：position:fixed 相对视口，滚动时不动 */
+.style-page .style-back{
+
+  position:fixed;
+
+  left:18px;
+
+  top:16px;
+
+  z-index:5;
+
+  background:rgba(0,0,0,.35);
+
+  border:1px solid rgba(181,139,69,.55);
+
+  border-radius:2px;
+
+  color:rgba(255,255,255,.85);
+
+  font-family:inherit;
+
+  font-size:13px;
+
+  padding:8px 16px;
+
+  letter-spacing:2px;
+
+  cursor:pointer;
+
+  backdrop-filter:blur(3px);
+
+  transition:.35s;
+
+}
+
+.style-page .style-back:hover{
+
+  background:rgba(181,139,69,.22);
+
+  border-color:rgba(255,214,150,.8);
+
+  color:#fff;
+
+}
+
+
+/* ---------------- 手机 ---------------- */
+
+@media (max-width:768px){
+
+  .style-page .section-nav{
+    display:none;
+  }
+
+  .style-page .style-back{ left:12px; top:12px; font-size:12px; padding:7px 12px; letter-spacing:1px; }
+
+  .style-page .style-cover h1{
+
+    font-size:40px;
+
+    letter-spacing:12px;
+
+    text-indent:12px;
+
+  }
+
+  .style-page .style-cover p{
+
+    font-size:16px;
+
+    line-height:2;
+
+  }
+
+  .style-page .cover-small{ letter-spacing:8px; font-size:12px; }
+  .style-page .scroll{ margin-top:56px; letter-spacing:6px; }
+
+  .style-page .archive-section{
+
+    padding:80px 30px;
+
+  }
+
+  .style-page .archive-section::before{
+
+    display:none;
+
+  }
+
+  .style-page .number{
+
+    font-size:80px;
+
+  }
+
+  .style-page .archive-section h1{
+
+    font-size:45px;
+
+    letter-spacing:10px;
+
+    text-indent:10px;
+
+  }
+
+  .style-page .archive-item{
+
+    font-size:16px;
+
+    letter-spacing:3px;
+
+  }
+
+  .style-page .entry-sep{
+
+    padding:0 7px;
+
+    font-size:13px;
+
+  }
+
+  .style-page .group{
+
+    padding-left:18px;
+
+    margin-bottom:40px;
+
+  }
+
+  .style-page .group h3{ letter-spacing:4px; margin-bottom:16px; }
+
+  .style-page .description{ margin-top:56px; }
+  .style-page .description p{
+
+    font-size:16px;
+
+  }
+
+  .style-page .style-end{ height:auto; padding:90px 24px; }
+  .style-page .style-end h2{ font-size:20px; }
+  .style-page .back-wheel{ padding:13px 26px; letter-spacing:3px; text-indent:3px; font-size:13px; }
+
+}

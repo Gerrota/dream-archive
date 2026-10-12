@@ -1,0 +1,85 @@
+/* =========================================================
+   全局样式（所有场景共用）
+   场景自己的样式放在 src/scenes/*.css
+   ========================================================= */
+
+*{ margin:0; padding:0; box-sizing:border-box; }
+
+html,body{ height:100%; }
+
+body{
+  background:#000;
+  overflow:hidden;
+  color:#fff;
+  font-family:"Songti SC","Source Han Serif SC","Noto Serif SC","STSong","SimSun",serif;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+
+/* 场景挂载点 */
+.stage{
+  position:fixed;
+  inset:0;
+  overflow:hidden;
+}
+
+/* 转场黑幕（components/transition.js 控制） */
+.transition-black{
+  position:fixed;
+  inset:0;
+  z-index:9000;
+  background:#000;
+  opacity:0;
+  pointer-events:none;
+}
+
+/* file:// 提示 */
+.file-hint{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:8vw;
+  background:#0a0305;
+}
+.file-hint[hidden]{ display:none; }
+.file-hint-box{
+  max-width:620px;
+  line-height:2;
+  font-size:15px;
+  color:#f4ead8;
+  border:1px solid rgba(255,120,130,.35);
+  padding:34px 38px;
+  background:rgba(255,255,255,.03);
+}
+.file-hint-box h2{
+  font-size:22px;
+  font-weight:400;
+  letter-spacing:.15em;
+  margin-bottom:18px;
+  color:#fff;
+}
+.file-hint-box b{ color:#ff9aa6; font-weight:400; }
+.file-hint-url{
+  margin-top:14px;
+  font-size:19px;
+  letter-spacing:.08em;
+  color:#fff;
+}
+.file-hint-tip{ margin-top:10px; font-size:13px; opacity:.6; }
+
+/* 版本标记（手机上排查"改了没生效"用，上线前删掉 index.html 里那个 div） */
+.build-tag{
+  position:fixed;
+  right:8px;
+  bottom:6px;
+  z-index:9998;
+  font-family:monospace;
+  font-size:11px;
+  letter-spacing:.06em;
+  color:rgba(255,255,255,.28);
+  pointer-events:none;
+  user-select:none;
+}

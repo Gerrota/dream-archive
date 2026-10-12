@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>回家种苞米</title>
+<link rel="icon" href="data:,">
+
+<!-- 样式表带 build 时间戳加载：手机上每次打开都拿最新的，不会被缓存住。
+     （图片不参与，照常走缓存，不用每次重下十几 MB） -->
+<script>
+  (function () {
+    var build = Date.now();
+    window.__BUILD = build;
+    [
+      "src/style.css",
+      "src/scenes/opening.css",
+      "src/scenes/archive.css",
+      "src/scenes/chapter3.css",
+      "src/scenes/style.css",
+      "src/scenes/notice.css",
+      "src/components/itemPopup.css",
+      "src/components/backgroundFX.css",
+      "src/components/bgm.css"
+    ].forEach(function (href) {
+      var link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = href + "?b=" + build;
+      document.head.appendChild(link);
+    });
+  })();
+</script>
+</head>
+
+<body>
+
+<!-- 场景挂载点：所有场景都挂在这，切场景时整体替换 -->
+<div class="stage" id="stage"></div>
+
+<!-- file:// 打开时的提示：ES Module 在 file:// 下会被浏览器拦掉 -->
+<div class="file-hint" id="file-hint" hidden>
+  <div class="file-hint-box">
+    <h2>需要用一个本地服务打开</h2>
+    <p>从这一版开始项目改成了 ES Module 结构，浏览器不允许用 <b>file://</b> 直接加载模块。</p>
+    <p>双击项目里的 <b>启动局域网服务.bat</b>，然后访问：</p>
+    <p class="file-hint-url">http://localhost:8080/</p>
+    <p class="file-hint-tip">（VS Code 里右键 index.html → Open with Live Server 也一样）</p>
+  </div>
+</div>
+
+<!-- GSAP：UMD 包，先于模块加载，会把 gsap 挂到 window 上 -->
+<script src="src/vendor/gsap.min.js"></script>
+
+<!-- 入口：也带时间戳，保证 main.js 本身不会被缓存住 -->
+<script>
+  (function () {
+    var s = document.createElement("script");
+    s.type = "module";
+    s.src = "src/main.js?b=" + (window.__BUILD || Date.now());
+    document.head.appendChild(s);
+  })();
+</script>
+
+<!-- 版本标记：手机上如果觉得"改了没生效"，看右下角这个号是不是最新的。
+     上线前删掉这一段即可。 -->
+<div class="build-tag" id="build-tag">v1013c</div>
+
+<script>
+  if (location.protocol === "file:") {
+    document.getElementById("file-hint").hidden = false;
+  }
+</script>
+
+</body>
+</html>

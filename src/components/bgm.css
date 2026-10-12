@@ -1,0 +1,132 @@
+/* =========================================================
+   BGM · 全站背景音乐开关（components/bgm.js）
+   ---------------------------------------------------------
+   右下角是版本号（.build-tag），所以这个开关放左下角。
+   直接挂在 body 上，不受场景切换影响。
+   ========================================================= */
+
+.bgm-toggle{
+
+  position:fixed;
+
+  left:14px;
+
+  bottom:14px;
+
+  /* 比转场黑幕(9000)高 —— 黑屏时也能点；比版本号(9998)低 */
+  z-index:9997;
+
+  display:inline-flex;
+
+  align-items:center;
+
+  gap:6px;
+
+  padding:7px 12px;
+
+  font-family:inherit;
+
+  font-size:12px;
+
+  letter-spacing:.14em;
+
+  line-height:1;
+
+  color:rgba(255,255,255,.5);
+
+  background:rgba(0,0,0,.35);
+
+  border:1px solid rgba(181,139,69,.35);
+
+  border-radius:2px;
+
+  cursor:pointer;
+
+  -webkit-tap-highlight-color:transparent;
+
+  backdrop-filter:blur(3px);
+
+  transition:color .3s ease, border-color .3s ease, background .3s ease, opacity .3s ease;
+
+}
+
+.bgm-toggle:hover{
+
+  color:#fff;
+
+  border-color:rgba(255,214,150,.7);
+
+  background:rgba(181,139,69,.2);
+
+}
+
+.bgm-toggle .bgm-icon{ font-size:14px; display:inline-block; }
+
+/* 正在放：金色 + 音符轻轻跳 */
+.bgm-toggle.is-playing{
+
+  color:#e8dcc4;
+
+  border-color:rgba(181,139,69,.7);
+
+}
+
+.bgm-toggle.is-playing .bgm-icon{
+
+  animation:bgm-note 1.6s ease-in-out infinite;
+
+}
+
+@keyframes bgm-note{
+
+  0%, 100%{ transform:translateY(-1px); opacity:.75; }
+
+  50%     { transform:translateY(2px);  opacity:1; }
+
+}
+
+/* 没找到音乐文件：灰掉，别让人以为坏了 */
+.bgm-toggle.is-missing{
+
+  opacity:.42;
+
+  cursor:default;
+
+  border-color:rgba(255,255,255,.2);
+
+}
+
+.bgm-toggle.is-missing:hover{
+
+  color:rgba(255,255,255,.5);
+
+  background:rgba(0,0,0,.35);
+
+  border-color:rgba(255,255,255,.2);
+
+}
+
+/* ---------------- 手机 ---------------- */
+
+@media (max-width:768px){
+
+  .bgm-toggle{ left:12px; bottom:12px; padding:6px 10px; font-size:11px; letter-spacing:.1em; gap:5px; }
+
+  .bgm-toggle .bgm-icon{ font-size:13px; }
+
+}
+
+/* 有底部 / 左侧安全区（刘海屏、横条）时让开一点。
+   放在最后：这样手机那段 bottom:12px 也会被它正确覆盖掉。
+   不支持 env() 的老浏览器整条跳过，上面两句仍然生效。 */
+@supports (bottom: env(safe-area-inset-bottom)){
+
+  .bgm-toggle{
+
+    bottom:calc(12px + env(safe-area-inset-bottom));
+
+    left:calc(12px + env(safe-area-inset-left));
+
+  }
+
+}
