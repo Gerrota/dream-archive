@@ -206,9 +206,18 @@
 .wheel-scene .quad{
   position:absolute;
   inset:0;
-  pointer-events:auto;
-  cursor:pointer;            /* 点它就能进对应页面 */
+
+  /* ★ pointer-events 的特殊规则：父层写了 none，后代写 auto 仍然能被点到。
+     所以光靠 .wheel-stage 那句 pointer-events:none 拦不住这四块扇形 ——
+     字幕还在播、轮盘（opacity:0）根本没显现的时候，它们其实已经能点了：
+     点在左半边 = 打开 WPS 话术、点右半边 = 打开 WPS 板评。
+     这里必须跟 .ready 一起开关，两边都要写。 */
+  pointer-events:none;
+
+  cursor:pointer;            /* .ready 之后点它就能进对应页面 */
 }
+
+.wheel-scene.ready .quad{ pointer-events:auto; }
 
 .quad-style { clip-path:polygon(50% 50%, 0 0, 100% 0); }
 .quad-voice { clip-path:polygon(50% 50%, 0 0, 0 100%); }

@@ -212,8 +212,14 @@ export function loadChapter3Scene(mount, ctx) {
     .to(line2, { duration: CONFIG.line2Hold })
     .to(line2, { opacity: 0, duration: CONFIG.line2Out, ease: "power2.in" })
 
-    /* 轮盘浮出 */
-    .fromTo(stage, { opacity: 0 }, { opacity: 1, duration: CONFIG.wheelIn }, ">-" + CONFIG.line2Out)
+    /* 轮盘浮出 —— 一浮出来就允许点击。
+       .ready 必须在这里就给上：CSS 用它开关 .quad 的 pointer-events，
+       要是等到整条时间线跑完（花亮起还要 2.6 秒）才给，
+       轮盘已经看得见了却点不动，那比现在还糟。 */
+    .fromTo(stage,
+      { opacity: 0 },
+      { opacity: 1, duration: CONFIG.wheelIn, onStart: () => { el.classList.add("ready"); } },
+      ">-" + CONFIG.line2Out)
     .fromTo(wheelOuter,
       { scale: 0.86, y: 26 },
       { scale: 1, y: 0, duration: CONFIG.wheelIn + 0.3, ease: "power3.out" }, "<")
@@ -226,6 +232,8 @@ export function loadChapter3Scene(mount, ctx) {
         duration: CONFIG.irisUp, ease: "power2.out" },
       "<" + CONFIG.irisAt)
 
+    /* 兜底：万一上面那步没走到（时间线被提前 kill 之类），
+       整条跑完也一定把 .ready 给上，绝不留一个点不动的轮盘 */
     .call(() => { el.classList.add("ready"); });
 
   }
@@ -253,6 +261,11 @@ export function loadChapter3Scene(mount, ctx) {
   /* 点/敲某一块 → 先让它亮起来（这样能看到自己选了哪块），再走确认动画 */
   function pickFrom(quad) {
     if (entering || destroyed || !quad) return;
+
+    /* 第二道保险：字幕还在播 / 轮盘还没浮出来 → 点什么都不做。
+       第一道是 CSS 里 .quad 的 pointer-events（见 chapter3.css），
+       但键盘回车那条路不经过 CSS，所以这里也要拦。 */
+    if (!el.classList.contains("ready")) return;
     var id = quad.dataset.id;
     if (!id) return;
     setActive(id);

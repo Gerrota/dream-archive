@@ -377,6 +377,16 @@ await typeWriter(el, "THE BUTLER", { speed: 70 });
   点下去**立刻换场**（让那一块亮起来只是黑下去之前的一瞬，用来确认自己点的是哪块）。
   原来那套「花瓣展开 → 该块发光 → 闪一下」的确认动画已按需求整体去掉 ——
   实测点击到换场景由 **约 1.9 秒缩短到 618ms**（剩下的就是 main.js 统一的 0.6s 黑场）。
+- ⚠️ **踩过的坑：字幕还在播的时候，轮盘居然已经能点了。**
+  原因是 `pointer-events` 有个反直觉的规则 —— **父层写 `none`，后代写 `auto` 仍然能被点到**。
+  所以 `.wheel-stage` 上那句 `pointer-events:none` 根本拦不住 `.quad`（扇形感应区）。
+  表现就是：字幕「求您怜惜我」显示着、轮盘 `opacity:0` 完全看不见的时候，
+  **点左右半边会直接打开 WPS 话术 / 板评**。
+  现在两边一起开关：`.wheel-scene .quad{ pointer-events:none }` +
+  `.wheel-scene.ready .quad{ pointer-events:auto }`，JS 里的 `pickFrom()` 再加一道 `ready` 保险。
+
+  另外 `.ready` 也**提前到「轮盘一浮现」就给**（挂在轮盘淡入那一步的 `onStart` 上，不再等整条时间线跑完）——
+  否则 CSS 一开关，就会出现「轮盘看得见却点不动」的 2.6 秒空窗，那比原 bug 还难受。
 - **键盘也能用**：每一块都带 `role="button"` + `tabindex="0"`，Tab 选中后回车/空格等于点它。
 - **中心的花只做装饰**：`pointer-events:none`，点它会"穿透"到下面那块扇形上去。
 - **不再转动**：早先做的"拖动转轮 / 1px=1°"已按你的要求**去掉**，轮盘固定不动。
